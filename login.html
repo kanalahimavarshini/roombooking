@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Login</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            display: none;
+            color: white;
+            text-align: center;
+        }
+
+        /* GLASS MODAL */
+        .modal {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            width: 350px;
+            padding: 30px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: white;
+            text-align: center;
+            animation: slide 0.5s ease;
+        }
+
+        @keyframes slide {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            background: white;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ddd;
+        }
+
+        .timer {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .resend {
+            color: yellow;
+            cursor: pointer;
+            font-size: 14px;
+            display: none;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 22px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-content" id="mainPage">
+        <h1>🎉 Welcome Himavarshini</h1>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="login-box">
+            <div class="close" onclick="closeModal()">✖</div>
+            <h2>Secure Login</h2>
+
+            <input type="text" id="mobile" placeholder="Enter 10-digit mobile">
+            <button onclick="sendOTP()">Send OTP</button>
+
+            <div id="otpArea" style="display:none;">
+                <input type="text" id="otpInput" placeholder="Enter OTP">
+                <button onclick="verifyOTP()">Verify OTP</button>
+                <div class="timer" id="timer"></div>
+                <div class="resend" id="resend" onclick="resendOTP()">Resend OTP</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let generatedOTP = "";
+        let countdown;
+        let timeLeft = 30;
+
+        // Auto login check
+        window.onload = function () {
+            if (localStorage.getItem("isLoggedIn") === "true") {
+                showMain();
+            }
+        }
+
+        // Send OTP
+        function sendOTP() {
+            let mobile = document.getElementById("mobile").value;
+
+            if (/^[0-9]{10}$/.test(mobile)) {
+                generatedOTP = Math.floor(100000 + Math.random() * 900000);
+                alert("Demo OTP: " + generatedOTP);
+
+                document.getElementById("otpArea").style.display = "block";
+                startTimer();
+            } else {
+                alert("Invalid mobile number");
+            }
+        }
+
+        // Timer
+        function startTimer() {
+            timeLeft = 30;
+            document.getElementById("resend").style.display = "none";
+
+            countdown = setInterval(() => {
+                document.getElementById("timer").innerText =
+                    "OTP expires in " + timeLeft + " seconds";
+                timeLeft--;
+
+                if (timeLeft < 0) {
+                    clearInterval(countdown);
+                    document.getElementById("timer").innerText = "OTP expired";
+                    document.getElementById("resend").style.display = "block";
+                }
+            }, 1000);
+        }
+
+        // Resend
+        function resendOTP() {
+            sendOTP();
+        }
+
+        // Verify
+        function verifyOTP() {
+            let entered = document.getElementById("otpInput").value;
+
+            if (entered == generatedOTP) {
+                localStorage.setItem("isLoggedIn", "true");
+                showMain();
+            } else {
+                alert("Wrong OTP");
+            }
+        }
+
+        function showMain() {
+            document.getElementById("loginModal").style.display = "none";
+            document.getElementById("mainPage").style.display = "block";
+        }
+
+        function logout() {
+            localStorage.removeItem("isLoggedIn");
+            location.reload();
+        }
+
+        function closeModal() {
+            document.getElementById("loginModal").style.display = "none";
+        }
+    </script>
+
+</body>
+
+</html>
