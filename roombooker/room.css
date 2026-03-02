@@ -100,7 +100,12 @@ button {
 button:hover {
     background: #f4a300;
 }
-
+.sidebar a:hover,
+a {
+    color: #dddddd;
+    text-decoration: none;
+    /* light white on hover */
+}
 button:disabled {
     background: gray;
     cursor: not-allowed;
